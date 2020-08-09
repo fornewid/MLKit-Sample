@@ -15,98 +15,49 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onButtonClick"
-            android:text="Chapter 01" />
+            android:text="Label Detector" />
 
         <Button
             android:id="@+id/button_02"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onButtonClick"
-            android:text="Chapter 02" />
+            android:text="Label Detector (Realtime)" />
 
         <Button
             android:id="@+id/button_03"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onButtonClick"
-            android:text="Chapter 03 A" />
+            android:text="Face Detector" />
 
         <Button
             android:id="@+id/button_04"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onButtonClick"
-            android:text="Chapter 03 B" />
+            android:text="Barcode Detector" />
 
         <Button
             android:id="@+id/button_05"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onButtonClick"
-            android:text="Chapter 04 A" />
+            android:text="Landmark Detector" />
 
         <Button
             android:id="@+id/button_06"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onButtonClick"
-            android:text="Chapter 04 - AppCompat" />
+            android:text="Text Recognizer" />
 
         <Button
             android:id="@+id/button_07"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onButtonClick"
-            android:text="Chapter 04 - Material Design" />
-
-        <Button
-            android:id="@+id/button_08"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onButtonClick"
-            android:text="Chapter 05" />
-
-        <Button
-            android:id="@+id/button_09"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onButtonClick"
-            android:text="Chapter 06a" />
-
-        <Button
-            android:id="@+id/button_10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onButtonClick"
-            android:text="Chapter 06b" />
-
-        <Button
-            android:id="@+id/button_11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onButtonClick"
-            android:text="Chapter 07 A" />
-
-        <Button
-            android:id="@+id/button_12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onButtonClick"
-            android:text="Chapter 07 B" />
-
-        <Button
-            android:id="@+id/button_13"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onButtonClick"
-            android:text="Chapter 07 C" />
-
-        <Button
-            android:id="@+id/button_14"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onButtonClick"
-            android:text="Chapter 09" />
+            android:text="Custum Model" />
 
     </LinearLayout>
 </ScrollView>

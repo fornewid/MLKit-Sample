@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -13,18 +14,18 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import com.google.mlkit.vision.common.InputImage
-import soup.mlkit.sample.OnDetectedListener
 import soup.mlkit.sample.databinding.CameraBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-abstract class CameraActivity : AppCompatActivity(), OnDetectedListener {
+abstract class CameraActivity : AppCompatActivity() {
 
     private lateinit var binding: CameraBinding
 
     protected val cameraExecutor: ExecutorService = Executors.newCachedThreadPool()
     private val scopedExecutor: ScopedExecutor = ScopedExecutor(cameraExecutor)
+
+    abstract fun onDetected(bitmap: Bitmap, rotationDegrees: Int)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +68,7 @@ abstract class CameraActivity : AppCompatActivity(), OnDetectedListener {
                     proxy.use {
                         val bitmap = proxy.image?.use { it.toBitmap() }
                         if (bitmap != null) {
-                            onDetected(InputImage.fromBitmap(bitmap, proxy.imageInfo.rotationDegrees))
+                            onDetected(bitmap, proxy.imageInfo.rotationDegrees)
                         }
                     }
                 }

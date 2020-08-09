@@ -6,6 +6,7 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".MLKitApplication"
@@ -16,8 +17,8 @@
         android:theme="@style/AppTheme">
 
         <meta-data
-            android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="barcode" />
+            android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+            android:value="label,face,ocr" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -26,8 +27,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BarcodeDetectActivity" />
-        <activity android:name=".DummyActivity" />
+        <activity android:name=".LabelDetectorActivity" />
+        <activity android:name=".RealtimeLabelDetectorActivity" />
+        <activity android:name=".FaceDetectorActivity" />
+        <activity android:name=".BarcodeDetectorActivity" />
+        <activity android:name=".LandmarkDetectorActivity" />
+        <activity android:name=".TextRecognizerActivity" />
+        <activity android:name=".CustomModelActivity" />
     </application>
 
 </manifest>

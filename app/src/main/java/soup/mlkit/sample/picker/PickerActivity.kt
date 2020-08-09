@@ -4,18 +4,19 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.google.mlkit.vision.common.InputImage
-import soup.mlkit.sample.OnDetectedListener
 import soup.mlkit.sample.databinding.PickerBinding
 import soup.mlkit.sample.utils.setOnDebounceClickListener
 
-abstract class PickerActivity : AppCompatActivity(), OnDetectedListener {
+abstract class PickerActivity : AppCompatActivity() {
 
     private lateinit var binding: PickerBinding
+
+    abstract fun onDetected(uri: Uri)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +43,8 @@ abstract class PickerActivity : AppCompatActivity(), OnDetectedListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Gallery.onPictureTaken(requestCode, resultCode, data) { uri ->
-            onDetected(InputImage.fromFilePath(this, uri))
+            binding.previewView.setImageURI(uri)
+            onDetected(uri)
         }
     }
 

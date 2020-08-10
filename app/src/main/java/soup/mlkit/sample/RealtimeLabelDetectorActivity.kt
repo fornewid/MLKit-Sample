@@ -23,7 +23,7 @@ class RealtimeLabelDetectorActivity : CameraActivity() {
         }
     }
 
-    override fun onDetected(bitmap: Bitmap, rotationDegrees: Int) {
+    override fun onDetected(bitmap: Bitmap) {
         labelDetector?.detect(FirebaseVisionImage.fromBitmap(bitmap))
     }
 

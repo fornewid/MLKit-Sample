@@ -31,7 +31,7 @@ class CustomModelActivity : CameraActivity() {
         }
     }
 
-    override fun onDetected(bitmap: Bitmap, rotationDegrees: Int) {
+    override fun onDetected(bitmap: Bitmap) {
         imageClassification?.detect(FirebaseVisionImage.fromBitmap(bitmap))
     }
 

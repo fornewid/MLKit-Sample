@@ -21,7 +21,6 @@ class MLKitResultFragment : Fragment(R.layout.result) {
             binding.drawView.setImageSize(it.width, it.height)
         })
         viewModel.result.observe(viewLifecycleOwner, Observer {
-            binding.drawView.isVisible = it is MLKitResult.Draw
             binding.textScrollView.isVisible = it is MLKitResult.Text
 
             when (it) {
@@ -31,6 +30,15 @@ class MLKitResultFragment : Fragment(R.layout.result) {
                     }
                 is MLKitResult.Draw -> {
                     //TODO:
+                }
+                is MLKitResult.Face -> {
+                    binding.drawView.setFaces(it.list)
+                }
+                is MLKitResult.Element -> {
+                    binding.drawView.setTexts(it.list)
+                }
+                is MLKitResult.Barcode -> {
+                    binding.drawView.setBarcodes(it.list)
                 }
             }
         })

@@ -25,10 +25,16 @@ class TextRecognizerActivity : PickerActivity() {
 
         textRecognizer = TextRecognizer {
             Timber.d("text=${it.text}")
-            viewModel.onDrawResult(it.textBlocks
-                .flatMap(TextBlock::getLines)
-                .flatMap(Line::getElements)
-                .mapNotNull { element -> element.toDrawObject() })
+            viewModel.onTextResult(listOf(it.text))
+            viewModel.onDrawElement(
+                it.textBlocks
+                    .flatMap(TextBlock::getLines)
+                    .flatMap(Line::getElements)
+            )
+//            viewModel.onDrawResult(it.textBlocks
+//                .flatMap(TextBlock::getLines)
+//                .flatMap(Line::getElements)
+//                .mapNotNull { element -> element.toDrawObject() })
         }
     }
 

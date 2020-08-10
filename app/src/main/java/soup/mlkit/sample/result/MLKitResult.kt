@@ -3,11 +3,26 @@ package soup.mlkit.sample.result
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.graphics.Rect
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.google.firebase.ml.vision.face.FirebaseVisionFace
+import com.google.firebase.ml.vision.text.FirebaseVisionText
 
 sealed class MLKitResult {
 
     data class Text(
         val list: List<String>
+    ) : MLKitResult()
+
+    data class Face(
+        val list: List<FirebaseVisionFace>
+    ) : MLKitResult()
+
+    data class Element(
+        val list: List<FirebaseVisionText.Element>
+    ) : MLKitResult()
+
+    data class Barcode(
+        val list: List<FirebaseVisionBarcode>
     ) : MLKitResult()
 
     data class Draw(

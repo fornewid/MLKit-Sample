@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import soup.mlkit.sample.databinding.PickerBinding
 import soup.mlkit.sample.result.MLKitResultViewModel
 import soup.mlkit.sample.utils.setOnDebounceClickListener
@@ -47,6 +48,9 @@ abstract class PickerActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         Gallery.onPictureTaken(requestCode, resultCode, data) { uri ->
             binding.previewView.setImageURI(uri)
+            FirebaseVisionImage.fromFilePath(this, uri).bitmap.let {
+                viewModel.onImageSizeChanged(it.width, it.height)
+            }
             onDetected(uri)
         }
     }

@@ -4,6 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <soup.mlkit.sample.result.DrawView
+        android:id="@+id/draw_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <ScrollView
         android:id="@+id/text_scroll_view"
         android:layout_width="match_parent"
@@ -22,11 +27,4 @@
             android:textColor="@android:color/black"
             tools:text="Multiple\nLines" />
     </ScrollView>
-
-    <soup.mlkit.sample.result.DrawView
-        android:id="@+id/draw_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        tools:visibility="visible" />
 </FrameLayout>

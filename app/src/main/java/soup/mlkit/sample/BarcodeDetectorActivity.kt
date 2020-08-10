@@ -8,6 +8,7 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOption
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import soup.mlkit.sample.camera.CameraActivity
 import timber.log.Timber
+import java.util.concurrent.atomic.AtomicBoolean
 
 class BarcodeDetectorActivity : CameraActivity() {
 
@@ -17,22 +18,21 @@ class BarcodeDetectorActivity : CameraActivity() {
         super.onCreate(savedInstanceState)
 
         barcodeDetector = BarcodeDetector {
-//            val size = min(
-//                it.boundingBox?.width() ?: 10,
-//                it.boundingBox?.height() ?: 10
-//            )
-//            it.toBarcodeImage(size)
-//            Toast.makeText(applicationContext, "rawValue=${it.rawValue}", Toast.LENGTH_SHORT).show()
+            Timber.d(it.mapNotNull { barcode -> barcode.rawValue }.joinToString(separator = "\n"))
+            viewModel.onDrawBarcode(it)
+            viewModel.onTextResult(it.mapNotNull { barcode -> barcode.rawValue })
         }
     }
 
-    override fun onDetected(bitmap: Bitmap, rotationDegrees: Int) {
+    override fun onDetected(bitmap: Bitmap) {
         barcodeDetector?.detect(FirebaseVisionImage.fromBitmap(bitmap))
     }
 
     private class BarcodeDetector(
         private val onDetected: (List<FirebaseVisionBarcode>) -> Unit
     ) {
+
+        private val isInDetecting = AtomicBoolean(false)
 
         private val detector = FirebaseVision.getInstance()
             .getVisionBarcodeDetector(
@@ -41,15 +41,24 @@ class BarcodeDetectorActivity : CameraActivity() {
                     .build()
             )
 
+        fun isInDetecting(): Boolean {
+            return isInDetecting.get()
+        }
+
         fun detect(image: FirebaseVisionImage) {
-            detector
-                .detectInImage(image)
-                .addOnSuccessListener {
-                    onDetected(it.orEmpty())
-                }
-                .addOnFailureListener {
-                    Timber.w(it)
-                }
+            if (isInDetecting.compareAndSet(false, true)) {
+                detector
+                    .detectInImage(image)
+                    .addOnSuccessListener {
+                        onDetected(it.orEmpty())
+                    }
+                    .addOnFailureListener {
+                        Timber.w(it)
+                    }
+                    .addOnCompleteListener {
+                        isInDetecting.set(false)
+                    }
+            }
         }
     }
 }

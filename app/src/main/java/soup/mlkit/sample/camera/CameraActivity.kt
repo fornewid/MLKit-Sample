@@ -15,6 +15,8 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import soup.mlkit.sample.databinding.CameraBinding
 import soup.mlkit.sample.result.MLKitResultViewModel
 import java.util.concurrent.ExecutorService
@@ -28,7 +30,7 @@ abstract class CameraActivity : AppCompatActivity() {
     private val cameraExecutor: ExecutorService = Executors.newCachedThreadPool()
     private val scopedExecutor: ScopedExecutor = ScopedExecutor(cameraExecutor)
 
-    abstract fun onDetected(bitmap: Bitmap, rotationDegrees: Int)
+    abstract fun onDetected(bitmap: Bitmap)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,10 +71,19 @@ abstract class CameraActivity : AppCompatActivity() {
             imageAnalysis.setAnalyzer(
                 scopedExecutor, ImageAnalysis.Analyzer { proxy ->
                     proxy.use {
-                        val bitmap = proxy.image?.use { it.toBitmap() }
+                        val bitmap = proxy.image?.use {
+                            val rotationDegrees = when (proxy.imageInfo.rotationDegrees) {
+                                0 -> FirebaseVisionImageMetadata.ROTATION_0
+                                90 -> FirebaseVisionImageMetadata.ROTATION_90
+                                180 -> FirebaseVisionImageMetadata.ROTATION_180
+                                270 -> FirebaseVisionImageMetadata.ROTATION_270
+                                else -> FirebaseVisionImageMetadata.ROTATION_0
+                            }
+                            FirebaseVisionImage.fromMediaImage(it, rotationDegrees).bitmap
+                        }
                         if (bitmap != null) {
                             viewModel.onImageSizeChanged(bitmap.width, bitmap.height)
-                            onDetected(bitmap, proxy.imageInfo.rotationDegrees)
+                            onDetected(bitmap)
                         }
                     }
                 }

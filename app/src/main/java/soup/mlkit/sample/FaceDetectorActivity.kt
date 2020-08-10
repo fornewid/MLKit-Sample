@@ -7,8 +7,8 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.face.FirebaseVisionFace
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions
 import soup.mlkit.sample.camera.CameraActivity
-import soup.mlkit.sample.result.DrawObject
 import timber.log.Timber
+import java.util.concurrent.atomic.AtomicBoolean
 
 class FaceDetectorActivity : CameraActivity() {
 
@@ -18,6 +18,8 @@ class FaceDetectorActivity : CameraActivity() {
         super.onCreate(savedInstanceState)
 
         faceDetector = FaceDetector {
+            Timber.d(it.map { face -> face.trackingId }.joinToString(separator = "\n"))
+            viewModel.onDrawFace(it)
 //            it.map { DrawObject.PointObject() }
 //            viewModel.onDrawResult(listOf())
 //            val size = min(
@@ -29,13 +31,15 @@ class FaceDetectorActivity : CameraActivity() {
         }
     }
 
-    override fun onDetected(bitmap: Bitmap, rotationDegrees: Int) {
+    override fun onDetected(bitmap: Bitmap) {
         faceDetector?.detect(FirebaseVisionImage.fromBitmap(bitmap))
     }
 
     private class FaceDetector(
         private val onDetected: (List<FirebaseVisionFace>) -> Unit
     ) {
+
+        private val isInDetecting = AtomicBoolean(false)
 
         private val detector = FirebaseVision.getInstance()
             .getVisionFaceDetector(
@@ -46,15 +50,24 @@ class FaceDetectorActivity : CameraActivity() {
                     .build()
             )
 
+        fun isInDetecting(): Boolean {
+            return isInDetecting.get()
+        }
+
         fun detect(image: FirebaseVisionImage) {
-            detector
-                .detectInImage(image)
-                .addOnSuccessListener {
-                    onDetected(it.orEmpty())
-                }
-                .addOnFailureListener {
-                    Timber.w(it)
-                }
+            if (isInDetecting.compareAndSet(false, true)) {
+                detector
+                    .detectInImage(image)
+                    .addOnSuccessListener {
+                        onDetected(it.orEmpty())
+                    }
+                    .addOnFailureListener {
+                        Timber.w(it)
+                    }
+                    .addOnCompleteListener {
+                        isInDetecting.set(false)
+                    }
+            }
         }
     }
 }

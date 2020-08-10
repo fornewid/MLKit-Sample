@@ -74,19 +74,19 @@ public class DrawView extends View {
     public void setFaces(@NonNull List<FirebaseVisionFace> faces) {
         this.faces.clear();
         this.faces.addAll(faces);
-        postInvalidate();
+        invalidate();
     }
 
     public void setTexts(@NonNull List<FirebaseVisionText.Element> texts) {
         this.texts.clear();
         this.texts.addAll(texts);
-        postInvalidate();
+        invalidate();
     }
 
     public void setBarcodes(@NonNull List<FirebaseVisionBarcode> barcodes) {
         this.barcodes.clear();
         this.barcodes.addAll(barcodes);
-        postInvalidate();
+        invalidate();
     }
 
     @Override

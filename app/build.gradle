@@ -63,6 +63,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-ml-vision-image-label-model:20.0.1'
     implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.3'
     implementation 'org.tensorflow:tensorflow-lite:2.0.0'
+    implementation 'com.journeyapps:zxing-android-embedded:3.6.0'
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
 

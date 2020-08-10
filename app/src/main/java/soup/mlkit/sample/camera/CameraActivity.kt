@@ -14,6 +14,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentContainerView
 import soup.mlkit.sample.databinding.CameraBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -21,6 +22,9 @@ import java.util.concurrent.Executors
 abstract class CameraActivity : AppCompatActivity() {
 
     private lateinit var binding: CameraBinding
+
+    protected val fragmentContainer: FragmentContainerView
+        get() = binding.fragmentContainer
 
     protected val cameraExecutor: ExecutorService = Executors.newCachedThreadPool()
     private val scopedExecutor: ScopedExecutor = ScopedExecutor(cameraExecutor)
@@ -79,7 +83,12 @@ abstract class CameraActivity : AppCompatActivity() {
                 .build()
 
             cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(this@CameraActivity, cameraSelector, preview, imageAnalysis)
+            cameraProvider.bindToLifecycle(
+                this@CameraActivity,
+                cameraSelector,
+                preview,
+                imageAnalysis
+            )
 
             // Use the camera object to link our preview use case with the view
             preview.setSurfaceProvider(previewView.createSurfaceProvider())
@@ -87,13 +96,21 @@ abstract class CameraActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(context))
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             REQUEST_CODE_CAMERA -> {
                 if (isPermissionsGranted(CAMERA_PERMISSION)) {
                     binding.bindCameraUseCases()
                 } else {
-                    Toast.makeText(applicationContext, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        applicationContext,
+                        "Permissions not granted by the user.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }

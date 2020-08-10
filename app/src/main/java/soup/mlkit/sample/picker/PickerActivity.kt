@@ -9,12 +9,16 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentContainerView
 import soup.mlkit.sample.databinding.PickerBinding
 import soup.mlkit.sample.utils.setOnDebounceClickListener
 
 abstract class PickerActivity : AppCompatActivity() {
 
     private lateinit var binding: PickerBinding
+
+    protected val fragmentContainer: FragmentContainerView
+        get() = binding.fragmentContainer
 
     abstract fun onDetected(uri: Uri)
 

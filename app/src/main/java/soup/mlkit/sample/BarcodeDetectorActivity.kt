@@ -8,7 +8,9 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import soup.mlkit.sample.camera.CameraActivity
+import soup.mlkit.sample.utils.toBarcodeImage
 import timber.log.Timber
+import kotlin.math.min
 
 class BarcodeDetectorActivity : CameraActivity() {
 
@@ -18,6 +20,11 @@ class BarcodeDetectorActivity : CameraActivity() {
         super.onCreate(savedInstanceState)
 
         barcodeDetector = BarcodeDetector {
+            val size = min(
+                it.boundingBox?.width() ?: 10,
+                it.boundingBox?.height() ?: 10
+            )
+            it.toBarcodeImage(size)
             Toast.makeText(applicationContext, "rawValue=${it.rawValue}", Toast.LENGTH_SHORT).show()
         }
     }

@@ -5,17 +5,17 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
+import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
 import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
 import com.google.firebase.ml.custom.FirebaseCustomRemoteModel
-import com.google.firebase.ml.custom.FirebaseModelDataType
-import com.google.firebase.ml.custom.FirebaseModelInputOutputOptions
-import com.google.firebase.ml.custom.FirebaseModelInputs
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import org.tensorflow.lite.Interpreter
 import soup.mlkit.sample.camera.CameraActivity
+import timber.log.Timber
 import java.io.InputStreamReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.*
 
 class CustomModelActivity : CameraActivity() {
 
@@ -48,14 +48,30 @@ class CustomModelActivity : CameraActivity() {
 
         init {
             val remoteModel = FirebaseCustomRemoteModel.Builder("image-classification").build()
-            FirebaseModelManager.getInstance().getLatestModelFile(remoteModel)
-                .addOnCompleteListener { task ->
-                    val modelFile = task.result
-                    if (modelFile != null) {
-                        interpreter = Interpreter(modelFile)
+            val conditions = FirebaseModelDownloadConditions.Builder()
+                .requireWifi()
+                .build()
+            FirebaseModelManager.getInstance().download(remoteModel, conditions)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        FirebaseModelManager.getInstance().getLatestModelFile(remoteModel)
+                            .addOnCompleteListener { task ->
+                                val modelFile = task.result
+                                interpreter = if (modelFile != null) {
+                                    Interpreter(modelFile)
+                                } else {
+                                    val model =
+                                        assets.open("mobilenet_v1_1.0_224_quant.tflite").readBytes()
+                                    val buffer = ByteBuffer.allocateDirect(model.size)
+                                        .order(ByteOrder.nativeOrder())
+                                    buffer.put(model)
+                                    Interpreter(buffer)
+                                }
+                            }
                     } else {
                         val model = assets.open("mobilenet_v1_1.0_224_quant.tflite").readBytes()
-                        val buffer = ByteBuffer.allocateDirect(model.size).order(ByteOrder.nativeOrder())
+                        val buffer =
+                            ByteBuffer.allocateDirect(model.size).order(ByteOrder.nativeOrder())
                         buffer.put(model)
                         interpreter = Interpreter(buffer)
                     }
@@ -63,24 +79,45 @@ class CustomModelActivity : CameraActivity() {
         }
 
         fun detect(image: FirebaseVisionImage) {
-            //TODO:
             val interpreter = interpreter ?: return
 
-            val inputOutputOptions =
-                FirebaseModelInputOutputOptions.Builder()
-                    .setInputFormat(0, FirebaseModelDataType.BYTE, intArrayOf(1, 224, 224, 3))
-                    .setOutputFormat(0, FirebaseModelDataType.BYTE, intArrayOf(1, 1001))
-                    .build()
-
             val bitmap = Bitmap.createScaledBitmap(image.bitmap, 224, 224, true)
-            val input = image2inputData(bitmap, Point(224, 224))
-            val inputs = FirebaseModelInputs.Builder()
-                .add(input)
-                .build()
+            val input = ByteBuffer.allocateDirect(224 * 224 * 3 * 1).order(ByteOrder.nativeOrder())
+            for (y in 0 until 224) {
+                for (x in 0 until 224) {
+                    val px = bitmap.getPixel(x, y)
 
-            interpreter.run(inputs, inputOutputOptions)
+                    // Get channel values from the pixel value.
+                    val r = Color.red(px)
+                    val g = Color.green(px)
+                    val b = Color.blue(px)
 
-            onClassified(emptyList())
+                    // Normalize channel values to [-1.0, 1.0]. This requirement depends on the model.
+                    // For example, some models might require values to be normalized to the range
+                    // [0.0, 1.0] instead.
+                    val rf = (r - 127) / 255
+                    val gf = (g - 127) / 255
+                    val bf = (b - 127) / 255
+
+                    input.put(rf.toByte())
+                    input.put(gf.toByte())
+                    input.put(bf.toByte())
+                }
+            }
+            val output = Array(1) { ByteArray(1001) }
+            interpreter.run(input, output)
+
+            //outputs를 HashMap으로 변환
+            val hashMap: MutableMap<Int, Int> = HashMap()
+            val inArray = output[0]
+            for (i in inArray.indices) {
+                hashMap[i] = inArray[i].toInt()
+            }
+
+            //신뢰도순 정렬
+            hashMap.entries.maxBy { it.value }?.let {
+                onClassified(listOf(ImageLabel(labels[it.key], it.value)))
+            }
         }
 
         //Bitmap을 다차원 배열로 변환
@@ -109,7 +146,7 @@ class CustomModelActivity : CameraActivity() {
 
         data class ImageLabel(
             val label: String,
-            val probabilities: Float
+            val probabilities: Int
         )
     }
 }

@@ -26,7 +26,7 @@ class MLKitResultViewModel : ViewModel() {
     }
 
     fun onTextResult(result: List<String>) {
-        _result.value = MLKitResult.Text(result)
+        _result.postValue(MLKitResult.Text(result))
     }
 
     fun onDrawResult(result: List<DrawObject>) {

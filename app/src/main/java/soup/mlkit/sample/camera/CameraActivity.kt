@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
@@ -14,19 +15,17 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentContainerView
 import soup.mlkit.sample.databinding.CameraBinding
+import soup.mlkit.sample.result.MLKitResultViewModel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 abstract class CameraActivity : AppCompatActivity() {
 
     private lateinit var binding: CameraBinding
+    protected val viewModel: MLKitResultViewModel by viewModels()
 
-    protected val fragmentContainer: FragmentContainerView
-        get() = binding.fragmentContainer
-
-    protected val cameraExecutor: ExecutorService = Executors.newCachedThreadPool()
+    private val cameraExecutor: ExecutorService = Executors.newCachedThreadPool()
     private val scopedExecutor: ScopedExecutor = ScopedExecutor(cameraExecutor)
 
     abstract fun onDetected(bitmap: Bitmap, rotationDegrees: Int)
@@ -72,6 +71,7 @@ abstract class CameraActivity : AppCompatActivity() {
                     proxy.use {
                         val bitmap = proxy.image?.use { it.toBitmap() }
                         if (bitmap != null) {
+                            viewModel.onImageSizeChanged(bitmap.width, bitmap.height)
                             onDetected(bitmap, proxy.imageInfo.rotationDegrees)
                         }
                     }

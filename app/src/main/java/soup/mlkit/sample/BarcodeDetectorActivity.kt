@@ -2,15 +2,12 @@ package soup.mlkit.sample
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.widget.Toast
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import soup.mlkit.sample.camera.CameraActivity
-import soup.mlkit.sample.utils.toBarcodeImage
 import timber.log.Timber
-import kotlin.math.min
 
 class BarcodeDetectorActivity : CameraActivity() {
 
@@ -20,12 +17,12 @@ class BarcodeDetectorActivity : CameraActivity() {
         super.onCreate(savedInstanceState)
 
         barcodeDetector = BarcodeDetector {
-            val size = min(
-                it.boundingBox?.width() ?: 10,
-                it.boundingBox?.height() ?: 10
-            )
-            it.toBarcodeImage(size)
-            Toast.makeText(applicationContext, "rawValue=${it.rawValue}", Toast.LENGTH_SHORT).show()
+//            val size = min(
+//                it.boundingBox?.width() ?: 10,
+//                it.boundingBox?.height() ?: 10
+//            )
+//            it.toBarcodeImage(size)
+//            Toast.makeText(applicationContext, "rawValue=${it.rawValue}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -34,10 +31,10 @@ class BarcodeDetectorActivity : CameraActivity() {
     }
 
     private class BarcodeDetector(
-        private val onDetected: (FirebaseVisionBarcode) -> Unit
+        private val onDetected: (List<FirebaseVisionBarcode>) -> Unit
     ) {
 
-        private val barcodeDetector = FirebaseVision.getInstance()
+        private val detector = FirebaseVision.getInstance()
             .getVisionBarcodeDetector(
                 FirebaseVisionBarcodeDetectorOptions.Builder()
                     .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
@@ -45,10 +42,10 @@ class BarcodeDetectorActivity : CameraActivity() {
             )
 
         fun detect(image: FirebaseVisionImage) {
-            barcodeDetector
+            detector
                 .detectInImage(image)
                 .addOnSuccessListener {
-                    it.firstOrNull()?.run(onDetected)
+                    onDetected(it.orEmpty())
                 }
                 .addOnFailureListener {
                     Timber.w(it)

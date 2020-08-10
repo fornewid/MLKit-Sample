@@ -27,13 +27,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LabelDetectorActivity" />
-        <activity android:name=".RealtimeLabelDetectorActivity" />
-        <activity android:name=".FaceDetectorActivity" />
-        <activity android:name=".BarcodeDetectorActivity" />
-        <activity android:name=".LandmarkDetectorActivity" />
-        <activity android:name=".TextRecognizerActivity" />
-        <activity android:name=".CustomModelActivity" />
+        <activity
+            android:name=".LabelDetectorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".RealtimeLabelDetectorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FaceDetectorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".BarcodeDetectorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LandmarkDetectorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".TextRecognizerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CustomModelActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

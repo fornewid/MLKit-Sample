@@ -7,18 +7,17 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentContainerView
 import soup.mlkit.sample.databinding.PickerBinding
+import soup.mlkit.sample.result.MLKitResultViewModel
 import soup.mlkit.sample.utils.setOnDebounceClickListener
 
 abstract class PickerActivity : AppCompatActivity() {
 
     private lateinit var binding: PickerBinding
-
-    protected val fragmentContainer: FragmentContainerView
-        get() = binding.fragmentContainer
+    protected val viewModel: MLKitResultViewModel by viewModels()
 
     abstract fun onDetected(uri: Uri)
 
